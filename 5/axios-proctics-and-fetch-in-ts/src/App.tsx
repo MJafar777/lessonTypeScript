@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 const App = () => {
   interface User {
     id: number;
-    name: string;
-    phone: string;
-    usernames: string;
+    name?: string;
+    phone?: string;
+    usernames?: string;
   }
 
   const [users, setUsers] = useState<User[]>();
@@ -27,6 +27,20 @@ const App = () => {
       });
   }, []);
 
+  // delete function started
+  const deleteUser = (user: User) => {
+    const originalUser = users && [...users];
+    setUsers(users?.filter((u) => u.id !== user.id));
+
+    axios
+      .delete("https://jsonplaceholder.typicode.com/users/" + user.id)
+      .catch((error) => {
+        setError(error.message);
+        setUsers(originalUser);
+      });
+  };
+  // delete function finished
+
   return (
     <div>
       <h1>Users json server</h1>
@@ -35,14 +49,16 @@ const App = () => {
       {users?.map((user) => {
         return (
           <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
+            className="list-group-item d-flex justify-content-between"
             key={user.id}
           >
-            <h2>{user.name}</h2> <h3>{user.phone}</h3>
+            <h2>{user.name}</h2> <h3>{user.phone}</h3>{" "}
+            <button
+              className="btn btn-outline-danger"
+              onClick={() => deleteUser(user)}
+            >
+              delete
+            </button>
           </div>
         );
       })}
