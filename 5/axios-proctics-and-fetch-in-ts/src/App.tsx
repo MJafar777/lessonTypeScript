@@ -10,19 +10,28 @@ const App = () => {
   }
 
   const [users, setUsers] = useState<User[]>();
+  const [error, setError] = useState<string>();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     axios
       .get<User[]>("https://jsonplaceholder.typicode.com/users")
       .then((response) => {
         setUsers(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
       });
-    return;
   }, []);
 
   return (
     <div>
       <h1>Users json server</h1>
+      {error && <p className="text-danger">{error}</p>}
+      {loading && <div className="spinner-border"></div>}
       {users?.map((user) => {
         return (
           <div
